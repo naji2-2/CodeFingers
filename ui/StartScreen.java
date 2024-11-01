@@ -69,7 +69,6 @@ public class StartScreen extends JFrame {
         start_button.setFocusPainted(false);
         start_button.setContentAreaFilled(false);
 
-
         start_button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
