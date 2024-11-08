@@ -1,5 +1,6 @@
 package ui;
 
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -9,80 +10,75 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
-public class StartScreen extends JFrame {
 
+public class StartScreen extends JPanel {
+
+
+    private MainFrame mainFrame;
     private BufferedImage backgroundImage;
 
-    public StartScreen() {
+
+    public StartScreen(MainFrame mainFrame) {
+
+
+        this.mainFrame = mainFrame;
+
+
         // 배경 이미지 로드
         try {
             backgroundImage = ImageIO.read(new File("C:/CodeFingers_JAVA_Project/CodeFingers/images/StartScreen_n.png"));
-        } catch (IOException e) { // IOException을 catch하여 처리
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
-        // 기본 설정
-        setLayout(new BorderLayout());
-        setTitle("CodeFingers");
-        setSize(1280, 720); // 화면 크기 설정
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // 프레임 닫기 설정
-        setLocationRelativeTo(null); // 화면 중앙
 
-        // 패널 생성 및 배경 이미지 설정
-        JPanel panel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (backgroundImage != null) {
-                    g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this); // 이미지 그리기
-                }
-            }
-        };
+        setLayout(null); // 절대 위치 배치 사용
 
-        panel.setLayout(null); // 절대 위치 배치 사용
 
-        // CodeFingers
+        // CodeFingers 제목 설정
         JLabel titleLabel = new JLabel("CodeFingers", JLabel.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 170));
-        titleLabel.setForeground(Color.white); // 글씨 색상
-        titleLabel.setBounds(106, 180, 1100, 280); // 레이블 위치와 크기 설정
-        panel.add(titleLabel);
+        titleLabel.setForeground(Color.white);
+        titleLabel.setBounds(106, 180, 1100, 280);
+        add(titleLabel);
 
-        // 타자연습
+
+        // 타자연습 레이블 설정
         JLabel minLabel = new JLabel("타자연습", JLabel.CENTER);
         try {
             Font customFont = Font.createFont(Font.TRUETYPE_FONT, new File("C:/CodeFingers_JAVA_Project/CodeFingers/fonts/JejuGothic.ttf"));
-            minLabel.setFont(customFont.deriveFont(30f)); // 폰트 크기 조정
+            minLabel.setFont(customFont.deriveFont(30f));
         } catch (FontFormatException | IOException e) {
             e.printStackTrace();
             minLabel.setFont(new Font("Arial", Font.BOLD, 30)); // 대체 폰트
         }
+        minLabel.setForeground(Color.white);
+        minLabel.setBounds(855, 320, 500, 180);
+        add(minLabel);
 
-        minLabel.setForeground(Color.white); // 글씨 색상
-        minLabel.setBounds(855, 320, 500, 180); // 레이블 위치와 크기 설정
-        panel.add(minLabel);
 
-        // 시작 버튼
-        JButton start_button = new JButton(new ImageIcon("C:/CodeFingers_JAVA_Project/CodeFingers/images/StartButton.png"));
-        start_button.setBounds(391, 500, 500, 150); // 버튼 위치와 크기 설정
-        start_button.setBorderPainted(false);
-        start_button.setFocusPainted(false);
-        start_button.setContentAreaFilled(false);
+        // 시작 버튼 설정
+        JButton startButton = new JButton(new ImageIcon("C:/CodeFingers_JAVA_Project/CodeFingers/images/StartButton.png"));
+        startButton.setBounds(391, 500, 500, 150);
+        startButton.setBorderPainted(false);
+        startButton.setFocusPainted(false);
+        startButton.setContentAreaFilled(false);
+        startButton.addActionListener(new ActionListener() {
 
-        start_button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new LoginScreen(); // LoginScreen 창 열기
-                dispose(); // 현재 StartScreen 창 닫기
                 System.out.println("Start button clicked");
+                mainFrame.switchTo("LoginScreen"); // 화면 전환
             }
         });
+        add(startButton);
+    }
 
-        // 패널에 버튼 추가
-        panel.add(start_button);
-
-        // 프레임에 패널 추가
-        this.add(panel);
-        this.setVisible(true); // 프레임 보이게 하기
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (backgroundImage != null) {
+            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+        }
     }
 }
