@@ -1,6 +1,5 @@
 package ui;
 
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -10,19 +9,14 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
-
 public class StartScreen extends JPanel {
-
 
     private MainFrame mainFrame;
     private BufferedImage backgroundImage;
 
-
     public StartScreen(MainFrame mainFrame) {
 
-
         this.mainFrame = mainFrame;
-
 
         // 배경 이미지 로드
         try {
@@ -31,9 +25,7 @@ public class StartScreen extends JPanel {
             e.printStackTrace();
         }
 
-
         setLayout(null); // 절대 위치 배치 사용
-
 
         // CodeFingers 제목 설정
         JLabel titleLabel = new JLabel("CodeFingers", JLabel.CENTER);
@@ -41,7 +33,6 @@ public class StartScreen extends JPanel {
         titleLabel.setForeground(Color.white);
         titleLabel.setBounds(106, 180, 1100, 280);
         add(titleLabel);
-
 
         // 타자연습 레이블 설정
         JLabel minLabel = new JLabel("타자연습", JLabel.CENTER);
@@ -55,7 +46,6 @@ public class StartScreen extends JPanel {
         minLabel.setForeground(Color.white);
         minLabel.setBounds(855, 320, 500, 180);
         add(minLabel);
-
 
         // 시작 버튼 설정
         JButton startButton = new JButton(new ImageIcon("C:/CodeFingers_JAVA_Project/CodeFingers/images/StartButton.png"));

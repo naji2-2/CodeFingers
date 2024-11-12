@@ -6,7 +6,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 public class LoginScreen extends JPanel {
@@ -15,6 +14,7 @@ public class LoginScreen extends JPanel {
     private BufferedImage backgroundImage;
 
     public LoginScreen(MainFrame mainFrame) {
+
         this.mainFrame = mainFrame;
 
         setLayout(null);
@@ -22,20 +22,21 @@ public class LoginScreen extends JPanel {
 
         // 배경 이미지 로드
         try {
-            backgroundImage = ImageIO.read(new File("C:/CodeFingers_JAVA_Project/CodeFingers/images/Login_n.png"));
+            backgroundImage = ImageIO.read(getClass().getResource("/images/Login_n.png"));  // 상대 경로로 수정
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         // 입력 필드 및 버튼 설정
         JLabel loginLabel = createLabel("로그인", 570, 150, 44, Color.WHITE);
-        JLabel idLabel = createLabel("아이디", 366, 315, 44, new Color(52, 71, 200));
-        JTextField idField = createTextField(560, 325);
-        JLabel pwLabel = createLabel("비밀번호", 323, 430, 44, new Color(52, 71, 200));
-        JPasswordField pwField = createPasswordField(560, 440);
+        JLabel idLabel = createLabel("아이디", 366, 300, 44, new Color(52, 71, 200));
+        JTextField idField = createTextField(560, 305);
+        JLabel pwLabel = createLabel("비밀번호", 323, 405, 44, new Color(52, 71, 200));
+        JPasswordField pwField = createPasswordField(560, 415);
 
-        JButton loButton = createButton("아직 회원이 아니신가요?", 470, 618, 30, Color.WHITE);
-        JButton loginButton = createButton("▶", 957, 463, 55, new Color(52, 71, 200));
+        JButton JoButton = createButton("아직 회원이 아니신가요?", 470, 580, 30, Color.WHITE);
+        JButton loginButton = createButton("▶", 775, 450, 55, new Color(52, 71, 200));
+        loginButton.setBounds(955, 455, 55, 55);
 
         // 로그인 버튼 클릭 이벤트
         loginButton.addActionListener(new ActionListener() {
@@ -46,10 +47,11 @@ public class LoginScreen extends JPanel {
                 String password = new String(pwField.getPassword()); // 입력한 비밀번호
                 if (validateCredentials(id, password)) {
                     System.out.println("로그인 성공");
-                    mainFrame.switchTo("MainScreen"); // 성공 시 MainScreen으로 전환
+                    // 성공 시 ChooseGameScreen으로 전환
                 } else {
                     System.out.println("로그인 실패");
                     // 로그인 실패 메시지 표시
+                    //JOptionPane.showMessageDialog(mainFrame, "아이디 또는 비밀번호가 잘못되었습니다.", "로그인 실패", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -60,14 +62,14 @@ public class LoginScreen extends JPanel {
         add(idField);
         add(pwLabel);
         add(pwField);
-        add(loButton);
+        add(JoButton);
         add(loginButton);
 
         // 회원가입 버튼 클릭 이벤트
-        loButton.addActionListener(new ActionListener() {
+        JoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                mainFrame.switchTo("JoinScreen");
+                // 회원가입 화면으로 전환
                 System.out.println("Join Button clicked");
             }
         });
@@ -91,20 +93,20 @@ public class LoginScreen extends JPanel {
 
     private JTextField createTextField(int x, int y) {
         JTextField textField = new JTextField();
-        textField.setBounds(x, y, 250, 40);
+        textField.setBounds(x, y, 280, 45);
         textField.setOpaque(false);
         textField.setForeground(new Color(52, 71, 200));
-        textField.setFont(new Font("SansSerif", Font.BOLD, 20));
+        textField.setFont(new Font("SansSerif", Font.BOLD, 25));
         textField.setBorder(null);
         return textField;
     }
 
     private JPasswordField createPasswordField(int x, int y) {
         JPasswordField passwordField = new JPasswordField();
-        passwordField.setBounds(x, y, 250, 40);
+        passwordField.setBounds(x, y, 280, 45);
         passwordField.setOpaque(false);
         passwordField.setForeground(new Color(52, 71, 200));
-        passwordField.setFont(new Font("SansSerif", Font.PLAIN, 20));
+        passwordField.setFont(new Font("SansSerif", Font.PLAIN, 25));
         passwordField.setBorder(null);
         return passwordField;
     }
@@ -112,15 +114,20 @@ public class LoginScreen extends JPanel {
     private JButton createButton(String text, int x, int y, int fontSize, Color color) {
         JButton button = new JButton(text);
         button.setForeground(color);
-        button.setBounds(x, y, 350, 30);
+        button.setBounds(x, y, 350, 50);
         button.setBackground(new Color(0, 0, 0, 0)); // 배경 투명
         button.setFont(new Font("SansSerif", Font.BOLD, fontSize));
         button.setBorder(null);
+
+        // 호버 및 포커스 효과 제거
+        button.setContentAreaFilled(false);
+        button.setFocusPainted(false);
+        button.setRolloverEnabled(false);
         return button;
     }
 
     private boolean validateCredentials(String id, String password) {
-        // 로그인 테스트
+        // 로그인 기능 테스트
         return id.equals("naji22") && password.equals("1234");
     }
 }
