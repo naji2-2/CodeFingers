@@ -70,6 +70,7 @@ public class LoginScreen extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // 회원가입 화면으로 전환
+                mainFrame.switchTo("JoinScreen");
                 System.out.println("Join Button clicked");
             }
         });

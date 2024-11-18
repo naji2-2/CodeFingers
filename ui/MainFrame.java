@@ -15,6 +15,7 @@ public class MainFrame extends JFrame{
         // StartScreen, JoinScreen 등 필요한 화면을 추가
         mainPanel.add(new StartScreen(this), "StartScreen");
         mainPanel.add(new LoginScreen(this), "LoginScreen");
+        mainPanel.add(new JoinScreen(this), "JoinScreen");
 
         add(mainPanel);
         cardLayout.show(mainPanel, "StartScreen");  // 초기 화면 설정
