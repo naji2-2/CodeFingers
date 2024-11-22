@@ -20,7 +20,7 @@ public class StartScreen extends JPanel {
 
         // 배경 이미지 로드
         try {
-            backgroundImage = ImageIO.read(new File("C:/CodeFingers_JAVA_Project/CodeFingers/images/StartScreen_n.png"));
+            backgroundImage = ImageIO.read(new File("C:/CodeFingers_JAVA_Project/CodeFingers/images/Background.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -29,9 +29,9 @@ public class StartScreen extends JPanel {
 
         // CodeFingers 제목 설정
         JLabel titleLabel = new JLabel("CodeFingers", JLabel.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 170));
+        titleLabel.setFont(new Font("Host Grotesk", Font.BOLD, 200));
         titleLabel.setForeground(Color.white);
-        titleLabel.setBounds(106, 180, 1100, 280);
+        titleLabel.setBounds(100, 250, 1250, 261);
         add(titleLabel);
 
         // 타자연습 레이블 설정
@@ -41,15 +41,15 @@ public class StartScreen extends JPanel {
             minLabel.setFont(customFont.deriveFont(30f));
         } catch (FontFormatException | IOException e) {
             e.printStackTrace();
-            minLabel.setFont(new Font("Arial", Font.BOLD, 30)); // 대체 폰트
+            minLabel.setFont(new Font("Host Grotesk", Font.BOLD, 30)); // 대체 폰트
         }
         minLabel.setForeground(Color.white);
-        minLabel.setBounds(855, 320, 500, 180);
+        minLabel.setBounds(1170, 465, 178, 50);
         add(minLabel);
 
         // 시작 버튼 설정
-        JButton startButton = new JButton(new ImageIcon("C:/CodeFingers_JAVA_Project/CodeFingers/images/StartButton.png"));
-        startButton.setBounds(391, 500, 500, 150);
+        JButton startButton = new JButton(new ImageIcon("C:/CodeFingers_JAVA_Project/CodeFingers/images/Start_Button.png"));
+        startButton.setBounds(383, 610, 675, 203);
         startButton.setBorderPainted(false);
         startButton.setFocusPainted(false);
         startButton.setContentAreaFilled(false);
