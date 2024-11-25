@@ -25,13 +25,13 @@ public class LoginScreen extends JPanel {
         setLayout(null);
         setPreferredSize(new Dimension(1280, 720));
 
-        // 배경 이미지 로드
+        // 이미지 로드
         try {
             backgroundImage = ImageIO.read(getClass().getResource("/images/Background.png"));  // 상대 경로로 수정
             inputbackgroundImage = ImageIO.read(getClass().getResource("/images/Input_Background.png"));
             smallTitleImage = ImageIO.read(getClass().getResource("/images/Small_Title.png"));
             idinputImage = ImageIO.read(getClass().getResource("/images/Input.png"));
-            passwordinputImgae = ImageIO.read((getClass().getResource("/images/Input.png")));
+            passwordinputImgae = ImageIO.read(getClass().getResource("/images/Input.png"));
             nextbuttonImage = ImageIO.read(getClass().getResource("/images/Next_Button.png"));
         } catch (IOException e) {
             e.printStackTrace();
@@ -45,11 +45,11 @@ public class LoginScreen extends JPanel {
         JPasswordField pwField = createPasswordField(620, 517);
 
         JButton JoButton = createButton("아직 회원이 아니신가요?", 569, 630, 30, new Color(160, 186, 223));
-        JButton loginButton = createButton("다음", 1060, 780, 30, Color.WHITE);
-        loginButton.setBounds(1060, 780, 182, 81);
+        JButton nextButton = createButton("다음", 1060, 780, 30, Color.WHITE);
+        nextButton.setBounds(1060, 780, 182, 81);
 
         // 로그인 버튼 클릭 이벤트
-        loginButton.addActionListener(new ActionListener() {
+        nextButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Login Button clicked");
@@ -73,7 +73,7 @@ public class LoginScreen extends JPanel {
         add(pwLabel);
         add(pwField);
         add(JoButton);
-        add(loginButton);
+        add(nextButton);
 
         // 회원가입 버튼 클릭 이벤트
         JoButton.addActionListener(new ActionListener() {
