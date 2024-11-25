@@ -34,6 +34,13 @@ public class StartScreen extends JPanel {
         titleLabel.setBounds(100, 250, 1250, 261);
         add(titleLabel);
 
+        // 시작 버튼 텍스트 설정
+        JLabel startbutton = new JLabel("Click to Start", JLabel.CENTER);
+        startbutton.setFont(new Font("Host Grotesk", Font.BOLD, 44));
+        startbutton.setForeground(Color.white);
+        startbutton.setBounds(110, 580, 1250, 261);
+        add(startbutton);
+
         // 타자연습 레이블 설정
         JLabel minLabel = new JLabel("타자연습", JLabel.CENTER);
         try {

@@ -12,6 +12,11 @@ public class LoginScreen extends JPanel {
 
     private MainFrame mainFrame;
     private BufferedImage backgroundImage;
+    private BufferedImage inputbackgroundImage;
+    private BufferedImage smallTitleImage;
+    private BufferedImage idinputImage;
+    private BufferedImage passwordinputImgae;
+    private BufferedImage nextbuttonImage;
 
     public LoginScreen(MainFrame mainFrame) {
 
@@ -22,21 +27,26 @@ public class LoginScreen extends JPanel {
 
         // 배경 이미지 로드
         try {
-            backgroundImage = ImageIO.read(getClass().getResource("/images/Login_n.png"));  // 상대 경로로 수정
+            backgroundImage = ImageIO.read(getClass().getResource("/images/Background.png"));  // 상대 경로로 수정
+            inputbackgroundImage = ImageIO.read(getClass().getResource("/images/Input_Background.png"));
+            smallTitleImage = ImageIO.read(getClass().getResource("/images/Small_Title.png"));
+            idinputImage = ImageIO.read(getClass().getResource("/images/Input.png"));
+            passwordinputImgae = ImageIO.read((getClass().getResource("/images/Input.png")));
+            nextbuttonImage = ImageIO.read(getClass().getResource("/images/Next_Button.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         // 입력 필드 및 버튼 설정
-        JLabel loginLabel = createLabel("로그인", 570, 150, 44, Color.WHITE);
-        JLabel idLabel = createLabel("아이디", 366, 300, 44, new Color(52, 71, 200));
-        JTextField idField = createTextField(560, 305);
-        JLabel pwLabel = createLabel("비밀번호", 323, 405, 44, new Color(52, 71, 200));
-        JPasswordField pwField = createPasswordField(560, 415);
+        JLabel loginLabel = createLabel("로그인", 645, 235, 50, Color.WHITE);
+        JLabel idLabel = createLabel("아이디", 482, 395, 35, new Color(41, 105, 195));
+        JTextField idField = createTextField(620, 395);
+        JLabel pwLabel = createLabel("비밀번호", 450, 517, 35, new Color(41, 105, 195));
+        JPasswordField pwField = createPasswordField(620, 517);
 
-        JButton JoButton = createButton("아직 회원이 아니신가요?", 470, 580, 30, Color.WHITE);
-        JButton loginButton = createButton("▶", 775, 450, 55, new Color(52, 71, 200));
-        loginButton.setBounds(955, 455, 55, 55);
+        JButton JoButton = createButton("아직 회원이 아니신가요?", 569, 630, 30, new Color(160, 186, 223));
+        JButton loginButton = createButton("다음", 1060, 780, 30, Color.WHITE);
+        loginButton.setBounds(1060, 780, 182, 81);
 
         // 로그인 버튼 클릭 이벤트
         loginButton.addActionListener(new ActionListener() {
@@ -82,6 +92,21 @@ public class LoginScreen extends JPanel {
         if (backgroundImage != null) {
             g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
         }
+        if (inputbackgroundImage != null) {
+            g.drawImage(inputbackgroundImage, 297, 156, 846, 589, this);
+        }
+        if(smallTitleImage != null) {
+            g.drawImage(smallTitleImage, 433, 204, 575, 125, this);
+        }
+        if (idinputImage != null) {
+            g.drawImage(idinputImage, 603, 382, 384, 77, this);
+        }
+        if (passwordinputImgae != null) {
+            g.drawImage(passwordinputImgae, 603, 505, 384, 77, this);
+        }
+        if (nextbuttonImage != null) {
+            g.drawImage(nextbuttonImage, 1061, 784, 182, 81, this);
+        }
     }
 
     private JLabel createLabel(String text, int x, int y, int fontSize, Color color) {
@@ -96,7 +121,7 @@ public class LoginScreen extends JPanel {
         JTextField textField = new JTextField();
         textField.setBounds(x, y, 280, 45);
         textField.setOpaque(false);
-        textField.setForeground(new Color(52, 71, 200));
+        textField.setForeground(new Color(41, 105, 195));
         textField.setFont(new Font("SansSerif", Font.BOLD, 25));
         textField.setBorder(null);
         return textField;
@@ -106,7 +131,7 @@ public class LoginScreen extends JPanel {
         JPasswordField passwordField = new JPasswordField();
         passwordField.setBounds(x, y, 280, 45);
         passwordField.setOpaque(false);
-        passwordField.setForeground(new Color(52, 71, 200));
+        passwordField.setForeground(new Color(41, 105, 195));
         passwordField.setFont(new Font("SansSerif", Font.PLAIN, 25));
         passwordField.setBorder(null);
         return passwordField;
