@@ -80,7 +80,7 @@ public class LoginScreen extends JPanel {
             }
         });
 
-        // 이전 버튼을 누르면 로그인 화면으로 전환
+        // 이전 버튼을 누르면 시작 화면으로 전환
         previousButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
