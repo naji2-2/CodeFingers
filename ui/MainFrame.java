@@ -18,7 +18,7 @@ public class MainFrame extends JFrame {
         mainPanel.add(new StartScreen(this), "StartScreen");
         mainPanel.add(new LoginScreen(this), "LoginScreen");
         mainPanel.add(new JoinScreen(this), "JoinScreen");
-        mainPanel.add(new ChooseGameScreen(this), "ChooseGameScreen");
+        mainPanel.add(new ChooseOptionScreen(this), "ChooseGameScreen");
 
         add(mainPanel);
         cardLayout.show(mainPanel, "StartScreen");  // 초기 화면 설정

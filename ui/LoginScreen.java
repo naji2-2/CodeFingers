@@ -15,6 +15,7 @@ public class LoginScreen extends JPanel {
 
     private MainFrame mainFrame;
     private boolean loginFailed = false;
+    private JLabel errorMessage = null;
 
     private BufferedImage backgroundImage;
     private BufferedImage inputbackgroundImage;
@@ -25,6 +26,27 @@ public class LoginScreen extends JPanel {
     private BufferedImage previousbuttonImage;
     private BufferedImage loginfailedImage;
     private BufferedImage popupImage;
+
+    private void removeComponents() {
+        if (errorMessage != null) {
+            remove(errorMessage);
+            errorMessage = null; // 참조 제거
+        }
+        for (Component component : getComponents()) {
+            if (component instanceof JLabel) {
+                JLabel label = (JLabel) component;
+                if (label.getIcon() != null) { // 이미지가 있는 JLabel만 제거
+                    remove(label);
+                }
+            }
+        }
+
+        loginFailed = false;
+
+        // 화면 갱신
+        revalidate();
+        repaint();
+    }
 
     public LoginScreen(MainFrame mainFrame) {
 
@@ -63,14 +85,16 @@ public class LoginScreen extends JPanel {
 
         // 로그인 버튼 클릭 이벤트
         nextButton.addActionListener(new ActionListener() {
+
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Next Button clicked");
                 String id = idField.getText();
                 String password = new String(pwField.getPassword());
+                System.out.println("Next Button clicked");
                 if (validateCredentials(id, password)) {
                     System.out.println("로그인 성공");
                     loginFailed = false; // 실패 상태 초기화
+                    repaint();
                     mainFrame.switchTo("ChooseGameScreen");
                 } else {
                     System.out.println("로그인 실패");
@@ -84,6 +108,7 @@ public class LoginScreen extends JPanel {
         previousButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                removeComponents();
                 mainFrame.switchTo("StartScreen");
                 System.out.println("Previous Button clicked");
             }
@@ -103,6 +128,7 @@ public class LoginScreen extends JPanel {
         JoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                removeComponents();
                 // 회원가입 화면으로 전환
                 mainFrame.switchTo("JoinScreen");
                 System.out.println("Join Button clicked");
@@ -150,7 +176,7 @@ public class LoginScreen extends JPanel {
             setComponentZOrder(popupLabel, 1);
 
             // 에러 메시지
-            JLabel errorMessage = createLabel(
+            errorMessage = createLabel(
                     "<html>아이디 또는 비밀번호가<br>올바르지 않습니다!</html>",
                     528, 412, 35, new Color(41, 105, 195)
             );
