@@ -95,7 +95,7 @@ public class LoginScreen extends JPanel {
                     System.out.println("로그인 성공");
                     loginFailed = false; // 실패 상태 초기화
                     repaint();
-                    mainFrame.switchTo("ChooseGameScreen");
+                    mainFrame.switchTo("ChooseOptionScreen");
                 } else {
                     System.out.println("로그인 실패");
                     loginFailed = true; // 실패 상태 설정

@@ -72,6 +72,7 @@ public class ChooseOptionScreen extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // TODO : 단어 연습 화면으로 넘어가는 코드 구현
+                mainFrame.switchTo("WordPracticeScreen");
                 System.out.println("WordPractice Button clicked");
             }
         });
