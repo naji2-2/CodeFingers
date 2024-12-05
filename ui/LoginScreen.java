@@ -1,5 +1,7 @@
 package ui;
 
+import data.DBConnection;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -7,6 +9,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Objects;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -253,7 +258,21 @@ public class LoginScreen extends JPanel {
     }
 
     private boolean validateCredentials(String id, String password) {
-        // 로그인 기능 테스트
-        return id.equals("naji22") && password.equals("1234");
+        String query = "SELECT * FROM user WHERE userid = ? AND password = ?";
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1, id);
+            preparedStatement.setString(2, password);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                return resultSet.next(); // 결과가 있으면 로그인 성공
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "데이터베이스 연결 오류: " + e.getMessage());
+        }
+        return false;
     }
 }
