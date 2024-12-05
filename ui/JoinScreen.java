@@ -273,6 +273,7 @@ public class JoinScreen extends JPanel {
                         mainFrame.switchTo("LoginScreen");
                         // 리스너 제거 (다시 클릭 시 불필요한 동작 방지)
                         removeMouseListener(this);
+                        repaint(); // 패널 다시 그리기
                     }
                 });
             }

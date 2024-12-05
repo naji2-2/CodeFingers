@@ -42,6 +42,7 @@ public class MainFrame extends JFrame {
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) { // ESC 키 감지
                     exitFullscreen();
                 }
+
             }
 
             @Override

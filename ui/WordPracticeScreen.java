@@ -1,33 +1,56 @@
 package ui;
 
+import data.WordList;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Objects;
+import java.util.List;
 
-public class WordPracticeScreen extends JPanel {
+public class WordPracticeScreen extends JPanel implements KeyListener {
 
     private MainFrame mainFrame;
+    private KeyEventDispatcher keyEventDispatcher;
 
     private BufferedImage backgroundImage;
     private BufferedImage gamebackgroundImage;
     private BufferedImage wordbackgroundImage;
     private BufferedImage gobackbuttonImage;
     private BufferedImage inputImage;
-    private BufferedImage[] keyboardImage1;
-    private BufferedImage[] keyboardImage2;
-    private BufferedImage[] keyboardImage3;
-    private BufferedImage[] keyboardImage4;
-    private BufferedImage[] keyboardImage5;
+    private final BufferedImage[] keyboardImage1;
+    private final BufferedImage[] keyboardImage2;
+    private final BufferedImage[] keyboardImage3;
+    private final BufferedImage[] keyboardImage4;
+    private final BufferedImage[] keyboardImage5;
+
+    private JLabel writewordLabel = new JLabel();
+    private JLabel nextwritewordLable = new JLabel();
+    private JLabel nextwordLable = new JLabel();
+    private JTextField wordField;
+
+    // 점수 계산
+    private String currentWord;
+    private int score = 0;
+    private int totalWords = 0;
+    private List<String> words; // 단어 리스트
+    private int currentWordIndex = 0; // 현재 단어 인덱스
 
     public WordPracticeScreen(MainFrame mainFrame) {
 
         this.mainFrame = mainFrame;
         setLayout(null);
         setPreferredSize(new Dimension(1280, 720));
+        initializeWordList();
 
         // 키보드 이미지 배열 초기화
         keyboardImage1 = new BufferedImage[14];
@@ -36,90 +59,145 @@ public class WordPracticeScreen extends JPanel {
         keyboardImage4 = new BufferedImage[12];
         keyboardImage5 = new BufferedImage[5];
 
+        // KeyListener 추가
+        addKeyListener(this);
+        setFocusable(true);
+        requestFocusInWindow();
+
         // 이미지 로드
         try {
-            backgroundImage = ImageIO.read(getClass().getResource("/images/Background.png"));  // 상대 경로로 수정
-            gamebackgroundImage = ImageIO.read(getClass().getResource("/images/Game_Background.png"));
-            wordbackgroundImage = ImageIO.read(getClass().getResource("/images/Word_Background.png"));
-            gobackbuttonImage = ImageIO.read(getClass().getResource("/images/Goback_Button.png"));
-            inputImage = ImageIO.read(getClass().getResource("/images/Input_Point.png"));
+            backgroundImage = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/Background.png")));  // 상대 경로로 수정
+            gamebackgroundImage = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/Game_Background.png")));
+            wordbackgroundImage = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/Word_Background.png")));
+            gobackbuttonImage = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/Goback_Button.png")));
+            inputImage = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/Input_Point.png")));
             // 키보드 1번째 줄
-            keyboardImage1[0] = ImageIO.read(getClass().getResource("/images/keyboard/~ `.png"));
-            keyboardImage1[1] = ImageIO.read(getClass().getResource("/images/keyboard/! 1.png"));
-            keyboardImage1[2] = ImageIO.read(getClass().getResource("/images/keyboard/@ 2.png"));
-            keyboardImage1[3] = ImageIO.read(getClass().getResource("/images/keyboard/# 3.png"));
-            keyboardImage1[4] = ImageIO.read(getClass().getResource("/images/keyboard/$ 4.png"));
-            keyboardImage1[5] = ImageIO.read(getClass().getResource("/images/keyboard/% 5.png"));
-            keyboardImage1[6] = ImageIO.read(getClass().getResource("/images/keyboard/^ 6.png"));
-            keyboardImage1[7] = ImageIO.read(getClass().getResource("/images/keyboard/& 7.png"));
-            keyboardImage1[8] = ImageIO.read(getClass().getResource("/images/keyboard/_ 8.png"));
-            keyboardImage1[9] = ImageIO.read(getClass().getResource("/images/keyboard/( 9.png"));
-            keyboardImage1[10] = ImageIO.read(getClass().getResource("/images/keyboard/) 0.png"));
-            keyboardImage1[11] = ImageIO.read(getClass().getResource("/images/keyboard/_ -.png"));
-            keyboardImage1[12] = ImageIO.read(getClass().getResource("/images/keyboard/+ =.png"));
-            keyboardImage1[13] = ImageIO.read(getClass().getResource("/images/keyboard/Backspase.png"));
+            keyboardImage1[0] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/~ `.png")));
+            keyboardImage1[1] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/! 1.png")));
+            keyboardImage1[2] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/@ 2.png")));
+            keyboardImage1[3] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/# 3.png")));
+            keyboardImage1[4] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/$ 4.png")));
+            keyboardImage1[5] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/% 5.png")));
+            keyboardImage1[6] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/^ 6.png")));
+            keyboardImage1[7] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/& 7.png")));
+            keyboardImage1[8] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/_ 8.png")));
+            keyboardImage1[9] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/( 9.png")));
+            keyboardImage1[10] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/) 0.png")));
+            keyboardImage1[11] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/_ -.png")));
+            keyboardImage1[12] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/+ =.png")));
+            keyboardImage1[13] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/Backspase.png")));
             // 키보드 2번째 줄
-            keyboardImage2[0] = ImageIO.read(getClass().getResource("/images/keyboard/tab.png"));
-            keyboardImage2[1] = ImageIO.read(getClass().getResource("/images/keyboard/Q.png"));
-            keyboardImage2[2] = ImageIO.read(getClass().getResource("/images/keyboard/W.png"));
-            keyboardImage2[3] = ImageIO.read(getClass().getResource("/images/keyboard/E.png"));
-            keyboardImage2[4] = ImageIO.read(getClass().getResource("/images/keyboard/R.png"));
-            keyboardImage2[5] = ImageIO.read(getClass().getResource("/images/keyboard/T.png"));
-            keyboardImage2[6] = ImageIO.read(getClass().getResource("/images/keyboard/Y.png"));
-            keyboardImage2[7] = ImageIO.read(getClass().getResource("/images/keyboard/U.png"));
-            keyboardImage2[8] = ImageIO.read(getClass().getResource("/images/keyboard/I.png"));
-            keyboardImage2[9] = ImageIO.read(getClass().getResource("/images/keyboard/O.png"));
-            keyboardImage2[10] = ImageIO.read(getClass().getResource("/images/keyboard/P.png"));
-            keyboardImage2[11] = ImageIO.read(getClass().getResource("/images/keyboard/{ [.png"));
-            keyboardImage2[12] = ImageIO.read(getClass().getResource("/images/keyboard/} ].png"));
-            keyboardImage2[13] = ImageIO.read(getClass().getResource("/images/keyboard/_.png"));
+            keyboardImage2[0] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/tab.png")));
+            keyboardImage2[1] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/Q.png")));
+            keyboardImage2[2] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/W.png")));
+            keyboardImage2[3] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/E.png")));
+            keyboardImage2[4] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/R.png")));
+            keyboardImage2[5] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/T.png")));
+            keyboardImage2[6] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/Y.png")));
+            keyboardImage2[7] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/U.png")));
+            keyboardImage2[8] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/I.png")));
+            keyboardImage2[9] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/O.png")));
+            keyboardImage2[10] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/P.png")));
+            keyboardImage2[11] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/{ [.png")));
+            keyboardImage2[12] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/} ].png")));
+            keyboardImage2[13] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/_.png")));
             // 키보드 3번째 줄
-            keyboardImage3[0] = ImageIO.read(getClass().getResource("/images/keyboard/Caps Lock.png"));
-            keyboardImage3[1] = ImageIO.read(getClass().getResource("/images/keyboard/A.png"));
-            keyboardImage3[2] = ImageIO.read(getClass().getResource("/images/keyboard/S.png"));
-            keyboardImage3[3] = ImageIO.read(getClass().getResource("/images/keyboard/D.png"));
-            keyboardImage3[4] = ImageIO.read(getClass().getResource("/images/keyboard/F.png"));
-            keyboardImage3[5] = ImageIO.read(getClass().getResource("/images/keyboard/G.png"));
-            keyboardImage3[6] = ImageIO.read(getClass().getResource("/images/keyboard/H.png"));
-            keyboardImage3[7] = ImageIO.read(getClass().getResource("/images/keyboard/J.png"));
-            keyboardImage3[8] = ImageIO.read(getClass().getResource("/images/keyboard/K.png"));
-            keyboardImage3[9] = ImageIO.read(getClass().getResource("/images/keyboard/L.png"));
-            keyboardImage3[10] = ImageIO.read(getClass().getResource("/images/keyboard/_ ;.png"));
-            keyboardImage3[11] = ImageIO.read(getClass().getResource("/images/keyboard/_ '.png"));
-            keyboardImage3[12] = ImageIO.read(getClass().getResource("/images/keyboard/Enter.png"));
+            keyboardImage3[0] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/Caps Lock.png")));
+            keyboardImage3[1] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/A.png")));
+            keyboardImage3[2] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/S.png")));
+            keyboardImage3[3] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/D.png")));
+            keyboardImage3[4] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/F.png")));
+            keyboardImage3[5] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/G.png")));
+            keyboardImage3[6] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/H.png")));
+            keyboardImage3[7] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/J.png")));
+            keyboardImage3[8] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/K.png")));
+            keyboardImage3[9] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/L.png")));
+            keyboardImage3[10] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/_ ;.png")));
+            keyboardImage3[11] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/_ '.png")));
+            keyboardImage3[12] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/Enter.png")));
             // 키보드 4번째 줄
-            keyboardImage4[0] = ImageIO.read(getClass().getResource("/images/keyboard/Shift_L.png"));
-            keyboardImage4[1] = ImageIO.read(getClass().getResource("/images/keyboard/Z.png"));
-            keyboardImage4[2] = ImageIO.read(getClass().getResource("/images/keyboard/X.png"));
-            keyboardImage4[3] = ImageIO.read(getClass().getResource("/images/keyboard/C.png"));
-            keyboardImage4[4] = ImageIO.read(getClass().getResource("/images/keyboard/V.png"));
-            keyboardImage4[5] = ImageIO.read(getClass().getResource("/images/keyboard/B.png"));
-            keyboardImage4[6] = ImageIO.read(getClass().getResource("/images/keyboard/N.png"));
-            keyboardImage4[7] = ImageIO.read(getClass().getResource("/images/keyboard/N.png"));
-            keyboardImage4[8] = ImageIO.read(getClass().getResource("/images/keyboard/M.png"));
-            keyboardImage4[9] = ImageIO.read(getClass().getResource("/images/keyboard/_ ..png"));
-            keyboardImage4[10] = ImageIO.read(getClass().getResource("/images/keyboard/_ _.png"));
-            keyboardImage4[11] = ImageIO.read(getClass().getResource("/images/keyboard/Shift_R.png"));
+            keyboardImage4[0] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/Shift_L.png")));
+            keyboardImage4[1] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/Z.png")));
+            keyboardImage4[2] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/X.png")));
+            keyboardImage4[3] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/C.png")));
+            keyboardImage4[4] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/V.png")));
+            keyboardImage4[5] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/B.png")));
+            keyboardImage4[6] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/N.png")));
+            keyboardImage4[7] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/M.png")));
+            keyboardImage4[8] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/_ ,.png")));
+            keyboardImage4[9] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/_ ..png")));
+            keyboardImage4[10] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/_ _.png")));
+            keyboardImage4[11] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/Shift_R.png")));
             // 키보드 5번째 줄
-            keyboardImage5[0] = ImageIO.read(getClass().getResource("/images/keyboard/Ctrl.png"));
-            keyboardImage5[1] = ImageIO.read(getClass().getResource("/images/keyboard/Alt_L.png"));
-            keyboardImage5[2] = ImageIO.read(getClass().getResource("/images/keyboard/Space bar.png"));
-            keyboardImage5[3] = ImageIO.read(getClass().getResource("/images/keyboard/Alt_R.png"));
-            keyboardImage5[4] = ImageIO.read(getClass().getResource("/images/keyboard/Fn.png"));
+            keyboardImage5[0] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/Ctrl.png")));
+            keyboardImage5[1] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/Alt_L.png")));
+            keyboardImage5[2] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/Space bar.png")));
+            keyboardImage5[3] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/Alt_R.png")));
+            keyboardImage5[4] = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/Fn.png")));
+
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         JLabel logoLabel = createLabel("CodeFingers", 57, 22, 50, Color.WHITE);
         logoLabel.setBounds(57, 22, 350, 75);
-        JLabel nextwordLable = createLabel("다음 단어", 1122, 228, 28, new Color(29,73, 122));
+        writewordLabel = createLabel("", 562, 186, 70, new Color(29,73, 122));
+        writewordLabel.setBounds(562, 190, 300, 80);
+        nextwordLable = createLabel("다음 단어", 1100, 228, 28, new Color(29,73, 122));
+        nextwritewordLable = createLabel("", 1073, 280, 50, new Color(29,73, 122));
+        nextwritewordLable.setBounds(1073, 280,300, 55);
+        JTextField wordField = createTextField(532, 280);
 
         JButton gobackButton = createButton("돌아가기", 1205, 40, 30, Color.WHITE);
         gobackButton.setBounds(1205, 40, 131, 35);
 
         add(logoLabel);
+        add(writewordLabel);
+        add(wordField);
         add(nextwordLable);
+        add(nextwritewordLable);
         add(gobackButton);
+
+        loadWords();
+
+        // 컴포넌트가 모두 추가된 후 텍스트 필드에 포커스 요청
+        SwingUtilities.invokeLater(wordField::requestFocusInWindow);
+
+        // ActionListener 추가
+        wordField.addActionListener(e -> {
+            String userInput = wordField.getText().trim();
+
+            // currentWord와 userInput의 문자별 비교
+            for (int i = 0; i < Math.min(currentWord.length(), userInput.length()); i++) {
+                if (currentWord.charAt(i) != userInput.charAt(i)) {
+                    score--; // 한 문자가 틀리면 isCorrect를 false로 설정
+                    break;
+                }
+            }
+
+            // 입력이 맞으면 점수 증가
+            if (userInput.length() == currentWord.length()) {
+                score++;
+                System.out.println(score);
+            }
+            wordField.setText(""); // 입력 필드 초기화
+            totalWords++;
+            loadWords();
+            wordField.requestFocusInWindow(); // 포커스 재설정 (필요시)
+        });
+
+        addAncestorListener(new AncestorListener() {
+            @Override
+            public void ancestorAdded(AncestorEvent event) {
+                SwingUtilities.invokeLater(() -> wordField.requestFocusInWindow());
+            }
+
+            @Override
+            public void ancestorRemoved(AncestorEvent event) {}
+
+            @Override
+            public void ancestorMoved(AncestorEvent event) {}
+        });
 
         // 되돌아가기 버튼을 누르면 시작 화면으로 전환
         gobackButton.addActionListener(new ActionListener() {
@@ -129,6 +207,35 @@ public class WordPracticeScreen extends JPanel {
                 System.out.println("Goback Button clicked");
             }
         });
+
+    }
+
+    private void initializeWordList() {
+        try {
+            WordList wordList = new WordList();
+            words = wordList.getRandomWords(15);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            words = new ArrayList<>(); // 에러 발생 시 빈 리스트로 초기화
+        }
+    }
+
+
+    private void loadWords() {
+        if (!words.isEmpty()) {
+            if (totalWords < words.size()) {
+                currentWord = words.get(totalWords);
+                writewordLabel.setText(currentWord);
+            }
+            if (totalWords + 1 < words.size()) {
+                nextwritewordLable.setText(words.get(totalWords + 1));
+            } else {
+                nextwritewordLable.setText("");
+                nextwordLable.setText("");
+            }
+        }
+        revalidate();
+        repaint();
     }
 
     @Override
@@ -189,50 +296,45 @@ public class WordPracticeScreen extends JPanel {
         }
         // 키보드 다섯번째 줄
         if ( keyboardImage4 != null) {
-            int x = 87; int y = 758; int margin = 92;
-            g.drawImage(keyboardImage5[0], x, y,85, 70, this);
-            g.drawImage(keyboardImage5[1], x+margin, y, 85,70, this);
-            g.drawImage(keyboardImage5[2], x+margin*2, y,887,70, this);
-            g.drawImage(keyboardImage5[3], 889+margin*3, y, 85,70, this);
-            g.drawImage(keyboardImage5[4], 889+margin*4, y, 85, 70, this);
+            int x = 87;
+            int y = 758;
+            int margin = 92;
+            g.drawImage(keyboardImage5[0], x, y, 85, 70, this);
+            g.drawImage(keyboardImage5[1], x + margin, y, 85, 70, this);
+            g.drawImage(keyboardImage5[2], x + margin * 2, y, 887, 70, this);
+            g.drawImage(keyboardImage5[3], 889 + margin * 3, y, 85, 70, this);
+            g.drawImage(keyboardImage5[4], 889 + margin * 4, y, 85, 70, this);
         }
     }
 
-    private JPanel createKeyboardPanel() {
-        JPanel keyboardPanel = new JPanel();
-        keyboardPanel.setLayout(new GridLayout(4, 1, 5, 5)); // 키보드 줄
-
-        // 키 배열 생성
-        String[] row1 = {"~", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "=", "Backspace"};
-        String[] row2 = {"Tab", "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "[", "]", "\\"};
-        String[] row3 = {"Caps Lock", "A", "S", "D", "F", "G", "H", "J", "K", "L", ";", "\"", "Enter"};
-        String[] row4 = {"Shift", "Z", "X", "C", "V", "B", "N", "M", ",", ".", "/", "Shift"};
-
-        keyboardPanel.add(createKeyRow(row1));
-        keyboardPanel.add(createKeyRow(row2));
-        keyboardPanel.add(createKeyRow(row3));
-        keyboardPanel.add(createKeyRow(row4));
-
-        return keyboardPanel;
+    @Override
+    public void keyPressed(KeyEvent e) {
     }
 
-    private JPanel createKeyRow(String[] keys) {
-        JPanel rowPanel = new JPanel();
-        rowPanel.setLayout(new GridLayout(1, keys.length, 5, 5));
+    @Override
+    public void keyReleased(KeyEvent e) {
 
-        for (String key : keys) {
-            JButton keyButton = new JButton(key);
-            keyButton.setFont(new Font("SansSerif", Font.BOLD, 20));
-            keyButton.setFocusPainted(false);
-            keyButton.setBackground(Color.WHITE);
-            keyButton.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+    }
 
-            // 이벤트 리스너 추가
-            keyButton.addActionListener(e -> System.out.println("Key pressed: " + key));
-            rowPanel.add(keyButton);
+    @Override
+    public void keyTyped(KeyEvent e) {
+        // 필요한 경우 구현
+    }
+
+    //  키보드 클릭 이벤트
+    private void updateKeyboardImage(int keyCode, boolean isPressed) throws IOException {
+        switch (keyCode) {
+            case KeyEvent.VK_Q:
+                keyboardImage2[1] = isPressed ? ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard_Click/Q_Click.png"))) : ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/Q.png")));;
+                break;
+            case KeyEvent.VK_W:
+                keyboardImage2[2] = isPressed ? ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard_Click/W_Click.png"))) : ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/W.png")));;
+                break;
+            case KeyEvent.VK_E:
+                keyboardImage2[3] = isPressed ? ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard_Click/E_Click.png"))) : ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/keyboard/E.png")));;
+                break;
+            // 나머지 키들에 대해서도 유사하게 처리
         }
-
-        return rowPanel;
     }
 
     private JLabel createLabel(String text, int x, int y, int fontSize, Color color) {
@@ -240,7 +342,19 @@ public class WordPracticeScreen extends JPanel {
         label.setForeground(color);
         label.setFont(new Font("SansSerif", Font.BOLD, fontSize));
         label.setBounds(x, y, 220, 50);
+        label.setHorizontalAlignment(JLabel.CENTER); // 여기에 추가
         return label;
+    }
+
+    private JTextField createTextField(int x, int y) {
+        JTextField textField = new JTextField();
+        textField.setBounds(x, y, 370, 70);
+        textField.setOpaque(false);
+        textField.setForeground(new Color(29,73, 122));
+        textField.setFont(new Font("SansSerif", Font.BOLD, 40));
+        textField.setBorder(null);
+        textField.setHorizontalAlignment(JTextField.CENTER); // 텍스트 중앙 정렬
+        return textField;
     }
 
     private JButton createButton(String text, int x, int y, int fontSize, Color color) {
